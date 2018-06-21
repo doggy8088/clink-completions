@@ -84,6 +84,12 @@ local parser = clink.arg.new_parser
 
 -- end preamble
 
+local init_parser = parser({
+        "--force", "-f",
+        "--yes", "-y",
+        "--scope"
+        })
+
 local install_parser = parser({matchers.dirs},
         "--force",
         "-g", "--global",
@@ -151,7 +157,7 @@ local npm_parser = parser({
     "help-search",
     "home",
     "info",
-    "init",
+    "init" .. init_parser,
     "install" .. install_parser,
     "issues",
     "la",
@@ -184,16 +190,16 @@ local npm_parser = parser({
     "repo",
     "restart",
     "root",
-    "run"..script_parser,
+    -- "run"..script_parser,
     "run-script"..script_parser,
     "search" .. search_parser,
     "set",
     "show",
     "shrinkwrap",
-    "star",
-    "stars",
+    -- "star",
+    -- "stars",
     "start",
-    "stop",
+    -- "stop",
     "submodule",
     "tag",
     "test",
