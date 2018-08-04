@@ -86,6 +86,42 @@ local function get_framework_list()
     return res
 end
 
+local DBCONTEXT_LIST
+local DBCONTEXT_COUNT = 0
+local function get_dbcontext_list()
+    DBCONTEXT_COUNT=DBCONTEXT_COUNT+1
+    -- 最多呼叫五次之後，就會重新再抓取 dbcontext 清單
+    if DBCONTEXT_COUNT % 5 == 0 then DBCONTEXT_LIST = nil end
+
+    if DBCONTEXT_LIST then return DBCONTEXT_LIST end
+
+    local res = w()
+
+    -- local proc = io.popen("dotnet ef dbcontext list --no-build")
+    local proc = io.popen("dotnet ef dbcontext list")
+    if not proc then
+        return res
+    end
+
+    for line in proc:lines() do
+        table.insert(res, line)
+    end
+
+    proc:close()
+
+    table.sort(res, function(a, b) return a > b end)
+
+    -- 要加上這段才能顯示的時候有排序！
+    -- https://github.com/AmrEldib/cmder-powerline-prompt/blob/master/docs/clink.md
+    clink.match_display_filter = function ()
+        return res
+    end
+
+    DBCONTEXT_LIST = res
+
+    return res
+end
+
 local new_flags = {
     "--force",
     "--install",
@@ -494,7 +530,7 @@ local ef_database_parser = parser({
     "drop"..parser({
         "--force",
         "--dry-run",
-        "--context"..parser({"DBCONTEXT"}), -- TODO: 透過 dotnet ef migrations list 動態產生 <DBCONTEXT> 內容
+        "--context"..parser({get_dbcontext_list}), "-c"..parser({get_dbcontext_list}),
         "--project"..parser({csproj_files_matcher}),
         "--startup-project"..parser({csproj_files_matcher}),
         "--framework"..parser({get_framework_list}), -- "-f",
@@ -507,8 +543,8 @@ local ef_database_parser = parser({
         "--no-color",
         "--prefix-output",
     }):loop(1),
-    "update"..parser({"<MIGRATION>"}, {
-        "--context"..parser({"DBCONTEXT"}), -- TODO: 透過 dotnet ef migrations list 動態產生 <DBCONTEXT> 內容
+    "update"..flags({
+        "--context"..parser({get_dbcontext_list}), "-c"..parser({get_dbcontext_list}),
         "--project"..parser({csproj_files_matcher}),
         "--startup-project"..parser({csproj_files_matcher}),
         "--framework"..parser({get_framework_list}), -- "-f",
@@ -527,9 +563,9 @@ local ef_database_parser = parser({
     "--prefix-output",
 }):loop(1)
 local ef_dbcontext_parser = parser({
-    "info"..parser({
+    "info"..flags({
         "--json",
-        "--context"..parser({"DBCONTEXT"}), -- TODO: 透過 dotnet ef migrations list 動態產生 <DBCONTEXT> 內容
+        "--context"..parser({get_dbcontext_list}), "-c"..parser({get_dbcontext_list}),
         "--project"..parser({csproj_files_matcher}),
         "--startup-project"..parser({csproj_files_matcher}),
         "--framework"..parser({get_framework_list}), -- "-f",
@@ -542,7 +578,7 @@ local ef_dbcontext_parser = parser({
         "--no-color",
         "--prefix-output",
     }):loop(1),
-    "list"..parser({
+    "list"..flags({
         "--json",
         "--project"..parser({csproj_files_matcher}),
         "--startup-project"..parser({csproj_files_matcher}),
@@ -557,26 +593,30 @@ local ef_dbcontext_parser = parser({
         "--prefix-output",
     }):loop(1),
     "scaffold"..parser({
-        "--data-annotations", -- "-d"
-        "--context"..parser({"DBCONTEXT"}), -- TODO: 透過 dotnet ef migrations list 動態產生 <DBCONTEXT> 內容
-        "--context-dir"..parser({matchers.dirs}),
-        "--force",
-        "--output-dir"..parser({matchers.dirs}),
-        "--schema"..parser({""}),
-        "--table"..parser({""}),
-        "--use-database-names",
-        "--json",
-        "--project"..parser({csproj_files_matcher}),
-        "--startup-project"..parser({csproj_files_matcher}),
-        "--framework"..parser({get_framework_list}), -- "-f",
-        "--configuration"..parser({"Debug", "Release"}),
-        "--runtime", -- "-r", -- TODO: https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
-        "--msbuildprojectextensionspath"..parser({matchers.dirs, "obj"}),
-        "--no-build",
-        "--help", -- "-h"
-        "--verbose",
-        "--no-color",
-        "--prefix-output",
+        "Server=(localdb)\\MSSQLLocalDB;Database=DBName;Trusted_Connection=True;MultipleActiveResultSets=true"..parser({
+            "Microsoft.EntityFrameworkCore.SqlServer"..flags({
+                "--data-annotations", -- "-d"
+                "--context"..parser({get_dbcontext_list}), "-c"..parser({get_dbcontext_list}),
+                "--context-dir"..parser({matchers.dirs}),
+                "--force",
+                "--output-dir"..parser({matchers.dirs}),
+                "--schema"..parser({""}),
+                "--table"..parser({""}),
+                "--use-database-names",
+                "--json",
+                "--project"..parser({csproj_files_matcher}),
+                "--startup-project"..parser({csproj_files_matcher}),
+                "--framework"..parser({get_framework_list}), -- "-f",
+                "--configuration"..parser({"Debug", "Release"}),
+                "--runtime", -- "-r", -- TODO: https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
+                "--msbuildprojectextensionspath"..parser({matchers.dirs, "obj"}),
+                "--no-build",
+                "--help", -- "-h"
+                "--verbose",
+                "--no-color",
+                "--prefix-output",
+            })
+        })
     }):loop(1),
     "--help", -- "-h"
     "--verbose",
@@ -587,7 +627,7 @@ local ef_migrations_parser = parser({
     "add"..parser({"MigrationName"}, {
         "--output-dir"..parser({matchers.dirs}),
         "--json",
-        "--context"..parser({"DBCONTEXT"}), -- TODO: 透過 dotnet ef migrations list 動態產生 <DBCONTEXT> 內容
+        "--context"..parser({get_dbcontext_list}), "-c"..parser({get_dbcontext_list}),
         "--project"..parser({csproj_files_matcher}),
         "--startup-project"..parser({csproj_files_matcher}),
         "--framework"..parser({get_framework_list}), -- "-f",
@@ -602,7 +642,7 @@ local ef_migrations_parser = parser({
     }):loop(1),
     "list"..parser({
         "--json",
-        "--context"..parser({"DBCONTEXT"}), -- TODO: 透過 dotnet ef migrations list 動態產生 <DBCONTEXT> 內容
+        "--context"..parser({get_dbcontext_list}), "-c"..parser({get_dbcontext_list}),
         "--project"..parser({csproj_files_matcher}),
         "--startup-project"..parser({csproj_files_matcher}),
         "--framework"..parser({get_framework_list}), -- "-f",
@@ -618,7 +658,7 @@ local ef_migrations_parser = parser({
     "remove"..parser({
         "--force",
         "--json",
-        "--context"..parser({"DBCONTEXT"}), -- TODO: 透過 dotnet ef migrations list 動態產生 <DBCONTEXT> 內容
+        "--context"..parser({get_dbcontext_list}), "-c"..parser({get_dbcontext_list}),
         "--project"..parser({csproj_files_matcher}),
         "--startup-project"..parser({csproj_files_matcher}),
         "--framework"..parser({get_framework_list}), -- "-f",
@@ -634,7 +674,7 @@ local ef_migrations_parser = parser({
     "script"..parser({
         "--output"..parser({matchers.files}),
         "--idempotent", -- "-i"
-        "--context"..parser({"DBCONTEXT"}), -- TODO: 透過 dotnet ef migrations list 動態產生 <DBCONTEXT> 內容
+        "--context"..parser({get_dbcontext_list}), "-c"..parser({get_dbcontext_list}),
         "--project"..parser({csproj_files_matcher}),
         "--startup-project"..parser({csproj_files_matcher}),
         "--framework"..parser({get_framework_list}), -- "-f",
