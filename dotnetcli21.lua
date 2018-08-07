@@ -2,8 +2,10 @@ local matchers = require('matchers')
 local w = require('tables').wrap
 local parser = clink.arg.new_parser
 
+local sln_files_matcher = matchers.create_files_matcher("*.sln")
 local csproj_files_matcher = matchers.create_files_matcher("*.csproj")
 local nuget_files_matcher = matchers.create_files_matcher("*.config")
+local dll_files_matcher = matchers.create_files_matcher("*.dll")
 
 local function flags(...)
     local p = clink.arg.new_parser()
@@ -118,6 +120,37 @@ local function get_dbcontext_list()
     end
 
     DBCONTEXT_LIST = res
+
+    return res
+end
+
+local function get_sln_remove_list()
+    local res = w()
+
+    local proc = io.popen("dotnet sln list")
+    if not proc then
+        return res
+    end
+
+    local line_number = 1
+    for line in proc:lines() do
+        if line_number > 2 then
+            table.insert(res, line)
+        end
+        line_number = line_number + 1
+    end
+
+    proc:close()
+
+    -- print(dump(res))
+    table.sort(res, function(a, b) return a > b end)
+    -- print(dump(res))
+
+    -- 要加上這段才能顯示的時候有排序！
+    -- https://github.com/AmrEldib/cmder-powerline-prompt/blob/master/docs/clink.md
+    clink.match_display_filter = function ()
+        return res
+    end
 
     return res
 end
@@ -237,6 +270,42 @@ local new_parser = parser({
     "page"..flags({
         "--namespace", -- "-na",
         table.unpack(new_flags)
+    }):loop(1),
+    "nugetconfig"..flags({
+        "--help", -- "-h",
+        "--list", -- "-l",
+        "--name", -- "-n",
+        "--output"..parser({matchers.dirs}), -- "-o",
+        "--install", -- "-i",
+        "--uninstall", -- "-u",
+        "--nuget-source", -- "-s",
+        "--type"..parser({"project", "item", "other"}),
+        "--force",
+        "--language"..parser({"C#", "F#", "VB"}), -- "--lang",
+    }):loop(1),
+    "webconfig"..flags({
+        "--help", -- "-h",
+        "--list", -- "-l",
+        "--name", -- "-n",
+        "--output"..parser({matchers.dirs}), -- "-o",
+        "--install", -- "-i",
+        "--uninstall", -- "-u",
+        "--nuget-source", -- "-s",
+        "--type"..parser({"project", "item", "other"}),
+        "--force",
+        "--language"..parser({"C#", "F#", "VB"}), -- "--lang",
+    }):loop(1),
+    "sln"..flags({
+        "--help", -- "-h",
+        "--list", -- "-l",
+        "--name", -- "-n",
+        "--output"..parser({matchers.dirs}), -- "-o",
+        "--install", -- "-i",
+        "--uninstall", -- "-u",
+        "--nuget-source", -- "-s",
+        "--type"..parser({"project", "item", "other"}),
+        "--force",
+        "--language"..parser({"C#", "F#", "VB"}), -- "--lang",
     }):loop(1)
 }):loop(1)
 
@@ -395,11 +464,17 @@ local clean_parser = parser({
 
 
 -- https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-sln
-local sln_parser = parser({
-    "add"..parser({matchers.files, "**/*.csproj"}),
-    "remove"..parser({matchers.files, "**/*.csproj"}),
-    "list"
-}):loop(1)
+local sln_parser = parser({sln_files_matcher,
+        "add"..parser({csproj_files_matcher}),
+        "remove"..parser({get_sln_remove_list}),
+        "list",
+        "--help"
+    }, {
+    "add"..parser({matchers.files}),
+    "remove"..parser({matchers.files}),
+    "list",
+    "--help", -- "-h"
+})
 
 
 -- https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-store
@@ -824,6 +899,8 @@ local tool_parser = parser({
 
 
 local dotnetcli2_parser = parser({
+    {dll_files_matcher},
+    
     "new"..new_parser,
     "restore"..restore_parser,
     "build"..build_parser,
@@ -835,8 +912,8 @@ local dotnetcli2_parser = parser({
     "migrate"..migrate_parser,
     "clean"..clean_parser,
     "sln"..sln_parser,
+    "store"..store_parser,
     "help",
-    "store..store_parser",
 
     "add"..add_parser,
     "remove"..remove_parser,
@@ -870,24 +947,4 @@ dotnetcli2_parser:set_flags(
   "--additional-deps"..parser({matchers.dirs})
 )
 
-
 clink.arg.register_parser("dotnet", dotnetcli2_parser)
-
-
-
-
-
--- -- https://docs.microsoft.com/zh-tw/dotnet/core/tools/dotnet-install-script
--- local install_parser = parser({
---     "-Channel"..parser({"Current", "LTS", "master", "X.Y"}),
---     "-Version"..parser({"latest", "coherent", "X.Y.Z"}),
---     "-InstallDir"..parser({matchers.dirs}),
---     "-Architecture"..parser({"x86", "x64", "auto"}),
---     "-SharedRuntime",
---     "-DryRun",
---     "-NoPath",
---     "-AzureFeed"..parser({"https://dotnetcli.azureedge.net/dotnet"}),
---     "-ProxyAddress",
---     "--verbose",
---     "--help", -- "-h"
--- }):loop(1)
