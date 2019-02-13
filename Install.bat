@@ -2,6 +2,16 @@
 
 REM choco install clink -y
 
+net session >nul 2>&1
+if %errorLevel% == 0 (
+    GOTO Install
+) else (
+    echo Failure: Administrative permissions required!!!
+    GOTO End
+)
+
+:Install
+
 SET TargetFolder="%ProgramFiles(x86)%\clink\0.4.9"
 
 XCOPY /E /Y modules           %TargetFolder%\modules\
@@ -20,3 +30,5 @@ XCOPY /E /Y .busted           %TargetFolder%\
 XCOPY /E /Y .init.lua         %TargetFolder%\
 XCOPY /E /Y .luacheckrc       %TargetFolder%\
 XCOPY /E /Y .luacov           %TargetFolder%\
+
+:End
