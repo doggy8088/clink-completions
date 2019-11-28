@@ -7,6 +7,33 @@ clink-completions
 
 Completion files to [clink](https://github.com/mridgers/clink) util
 
+使用筆記
+========
+
+1. 全新電腦的快速安裝方式
+
+    ```sh
+    choco install clink -y
+    mkdir c:\Projects
+    cd /d c:\Projects
+    git clone https://github.com/doggy8088/clink-completions.git
+    cd clink-completions
+    install.bat
+    ```
+
+2. 如果你手動修改 `%ProgramFiles(x86)%\clink\0.4.9` 目錄下的 `*.lua` 檔案
+
+    你可以按下 `Ctrl-Q` 重新載入所有的 Lua 命令檔！
+
+3. 常用快速鍵
+
+   - `Ctrl-PgUp` - 可以自動執行 `cd ..` 回上一層
+   - `Ctrl-Z` - 輸入命令文字支援 Undo 功能
+   - `Ctrl-D` - 退出 Command Prompt
+   - `Ctrl-W` - 刪除一個字
+   - `Alt-H` - 顯示所有快速鍵組合
+   - `Ctrl-Q` - 重新載入 clink 的 Lua scripts
+
 Notes
 =====
 
