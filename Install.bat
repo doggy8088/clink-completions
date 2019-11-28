@@ -16,7 +16,7 @@ SET TargetFolder="%ProgramFiles(x86)%\clink\0.4.9"
 
 XCOPY /E /Y modules           %TargetFolder%\modules\
 XCOPY /E /Y spec              %TargetFolder%\spec\
-XCOPY /E /Y dotnetcli21.lua   %TargetFolder%\
+XCOPY /E /Y dotnetcli30.lua   %TargetFolder%\
 XCOPY /E /Y npm.lua           %TargetFolder%\
 XCOPY /E /Y angular-cli-6.lua %TargetFolder%\
 XCOPY /E /Y chocolatey.lua    %TargetFolder%\
