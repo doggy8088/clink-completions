@@ -492,7 +492,11 @@ local restore_flags = {
     "--no-cache",
     "--no-dependencies",
     "--packages"..parser({matchers.dirs}),
-    "--runtime", -- "-r", -- TODO: https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
+
+    -- TODO: https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
+    "--runtime"..parser({"win-x64", "win-x86", "linux-x64", "linux-x86", "linux-arm", "osx-x64"}),
+    "-r"..parser({"win-x64", "win-x86", "linux-x64", "linux-x86", "linux-arm", "osx-x64"}),
+
     "--source", -- "-s",
     "--verbosity"..parser({"quiet", "minimal", "normal", "detailed", "diagnostic"}), "-v"..parser({"quiet", "minimal", "normal", "detailed", "diagnostic"}),
 	"--interactive",
@@ -545,7 +549,11 @@ local build_flags = {
     "--no-restore",
 	"--interactive",
     "--output"..parser({matchers.dirs}), "-o"..parser({matchers.dirs}),
-    "--runtime", -- "-r", -- TODO: https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
+
+    -- TODO: https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
+    "--runtime"..parser({"win-x64", "win-x86", "linux-x64", "linux-x86", "linux-arm", "osx-x64"}),
+    "-r"..parser({"win-x64", "win-x86", "linux-x64", "linux-x86", "linux-arm", "osx-x64"}),
+
     "--verbosity"..parser({"quiet", "minimal", "normal", "detailed", "diagnostic"}), "-v"..parser({"quiet", "minimal", "normal", "detailed", "diagnostic"}),
     "--version-suffix",
     "--help"
@@ -572,9 +580,18 @@ local publish_flags = {
     "--interactive",
     "--no-restore",
     "--output"..parser({matchers.dirs}), "-o"..parser({matchers.dirs}),
-    "--runtime", -- "-r", -- TODO: https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
+
+    -- TODO: https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
+    "--runtime"..parser({"win-x64", "win-x86", "linux-x64", "linux-x86", "linux-arm", "osx-x64"}),
+    "-r"..parser({"win-x64", "win-x86", "linux-x64", "linux-x86", "linux-arm", "osx-x64"}),
+
     "--verbosity"..parser({"quiet", "minimal", "normal", "detailed", "diagnostic"}), "-v"..parser({"quiet", "minimal", "normal", "detailed", "diagnostic"}),
     "--no-dependencies",
+
+    "-p:UseAppHost=false",
+    "-p:PublishSingleFile=true",
+    "-p:PublishTrimmed=true",
+
     "--help"
 }
 
@@ -597,7 +614,11 @@ local run_flags = {
     "--no-restore",
     "--no-dependencies",
     "--project"..parser({matchers.ext_files('*.csproj')}),"-p"..parser({matchers.ext_files('*.csproj')}),
-    "--runtime", -- "-r", -- TODO: https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
+
+    -- TODO: https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
+    "--runtime"..parser({"win-x64", "win-x86", "linux-x64", "linux-x86", "linux-arm", "osx-x64"}),
+    "-r"..parser({"win-x64", "win-x86", "linux-x64", "linux-x86", "linux-arm", "osx-x64"}),
+
     "--verbosity"..parser({"quiet", "minimal", "normal", "detailed", "diagnostic"}), "-v"..parser({"quiet", "minimal", "normal", "detailed", "diagnostic"}),
     "--help"
 }
@@ -628,7 +649,9 @@ local test_flags = {
 
     "--framework"..parser({get_framework_list}), "-f"..parser({get_framework_list}),
 
-	"--runtime",
+	-- TODO: https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
+    "--runtime"..parser({"win-x64", "win-x86", "linux-x64", "linux-x86", "linux-arm", "osx-x64"}),
+    "-r"..parser({"win-x64", "win-x86", "linux-x64", "linux-x86", "linux-arm", "osx-x64"}),
 
     "--output"..parser({matchers.dirs}), "-o"..parser({matchers.dirs}),
 
@@ -719,7 +742,10 @@ local pack_flags = {
 
     "--verbosity"..parser({"quiet", "minimal", "normal", "detailed", "diagnostic"}), "-v"..parser({"quiet", "minimal", "normal", "detailed", "diagnostic"}),
 
-    "--runtime", -- "-r", -- TODO: https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
+    -- TODO: https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
+    "--runtime"..parser({"win-x64", "win-x86", "linux-x64", "linux-x86", "linux-arm", "osx-x64"}),
+    "-r"..parser({"win-x64", "win-x86", "linux-x64", "linux-x86", "linux-arm", "osx-x64"}),
+
     "--no-dependencies",
     "--force",
     "--help"
@@ -742,7 +768,11 @@ local clean_flags = {
 
     "--nologo",
     "--interactive",
-    "--runtime", -- "-r", -- TODO: https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
+
+    -- TODO: https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
+    "--runtime"..parser({"win-x64", "win-x86", "linux-x64", "linux-x86", "linux-arm", "osx-x64"}),
+    "-r"..parser({"win-x64", "win-x86", "linux-x64", "linux-x86", "linux-arm", "osx-x64"}),
+
     "--help"
 }
 
@@ -777,7 +807,11 @@ local store_flags = {
     "--manifest"..parser({matchers.ext_files('*.xml')}),
     "--framework"..parser({get_framework_list}), "-f"..parser({get_framework_list}),
     "--framework-version", -- TODO: <FRAMEWORK_VERSION> The Microsoft.NETCore.App package version that will be used to run the assemblies.
-    "--runtime",
+
+    -- TODO: https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
+    "--runtime"..parser({"win-x64", "win-x86", "linux-x64", "linux-x86", "linux-arm", "osx-x64"}),
+    "-r"..parser({"win-x64", "win-x86", "linux-x64", "linux-x86", "linux-arm", "osx-x64"}),
+
     "--output"..parser({matchers.dirs}), "-o"..parser({matchers.dirs}),
     "--working-dir"..parser({matchers.dirs}), "-w"..parser({matchers.dirs}),
     "--skip-optimization",
@@ -1155,7 +1189,11 @@ local ef_database_parser = parser_flags(parser({
             "--startup-project"..parser({csproj_files_matcher}),
             "--framework"..parser({get_framework_list}),
             "--configuration"..parser({"Debug", "Release"}),
-            "--runtime", -- "-r", -- TODO: https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
+
+            -- TODO: https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
+            "--runtime"..parser({"win-x64", "win-x86", "linux-x64", "linux-x86", "linux-arm", "osx-x64"}),
+            "-r"..parser({"win-x64", "win-x86", "linux-x64", "linux-x86", "linux-arm", "osx-x64"}),
+
             "--msbuildprojectextensionspath"..parser({matchers.dirs, "obj"}),
             "--no-build",
             "--verbose",
@@ -1171,7 +1209,11 @@ local ef_database_parser = parser_flags(parser({
         "--startup-project"..parser({csproj_files_matcher}),
         "--framework"..parser({get_framework_list}), "-f"..parser({get_framework_list}),
         "--configuration"..parser({"Debug", "Release"}), "-c"..parser({"Debug", "Release"}),
-        "--runtime", -- "-r", -- TODO: https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
+
+        -- TODO: https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
+        "--runtime"..parser({"win-x64", "win-x86", "linux-x64", "linux-x86", "linux-arm", "osx-x64"}),
+        "-r"..parser({"win-x64", "win-x86", "linux-x64", "linux-x86", "linux-arm", "osx-x64"}),
+
         "--msbuildprojectextensionspath"..parser({matchers.dirs, "obj"}),
         "--no-build",
         "--verbose",
@@ -1194,7 +1236,11 @@ local ef_dbcontext_parser = parser_flags(parser({
         "--startup-project"..parser({csproj_files_matcher}),
         "--framework"..parser({get_framework_list}), "-f"..parser({get_framework_list}),
         "--configuration"..parser({"Debug", "Release"}), "-c"..parser({"Debug", "Release"}),
-        "--runtime", -- "-r", -- TODO: https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
+
+        -- TODO: https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
+        "--runtime"..parser({"win-x64", "win-x86", "linux-x64", "linux-x86", "linux-arm", "osx-x64"}),
+        "-r"..parser({"win-x64", "win-x86", "linux-x64", "linux-x86", "linux-arm", "osx-x64"}),
+
         "--msbuildprojectextensionspath"..parser({matchers.dirs, "obj"}),
         "--no-build",
         "--verbose",
@@ -1208,7 +1254,11 @@ local ef_dbcontext_parser = parser_flags(parser({
         "--startup-project"..parser({csproj_files_matcher}),
         "--framework"..parser({get_framework_list}), "-f"..parser({get_framework_list}),
         "--configuration"..parser({"Debug", "Release"}), "-c"..parser({"Debug", "Release"}),
-        "--runtime", -- "-r", -- TODO: https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
+
+        -- TODO: https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
+        "--runtime"..parser({"win-x64", "win-x86", "linux-x64", "linux-x86", "linux-arm", "osx-x64"}),
+        "-r"..parser({"win-x64", "win-x86", "linux-x64", "linux-x86", "linux-arm", "osx-x64"}),
+
         "--msbuildprojectextensionspath"..parser({matchers.dirs, "obj"}),
         "--no-build",
         "--verbose",
@@ -1233,7 +1283,11 @@ local ef_dbcontext_parser = parser_flags(parser({
                 "--startup-project"..parser({csproj_files_matcher}),
                 "--framework"..parser({get_framework_list}), "-f"..parser({get_framework_list}),
                 "--configuration"..parser({"Debug", "Release"}),
-                "--runtime", -- "-r", -- TODO: https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
+
+                -- TODO: https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
+                "--runtime"..parser({"win-x64", "win-x86", "linux-x64", "linux-x86", "linux-arm", "osx-x64"}),
+                "-r"..parser({"win-x64", "win-x86", "linux-x64", "linux-x86", "linux-arm", "osx-x64"}),
+
                 "--msbuildprojectextensionspath"..parser({matchers.dirs, "obj"}),
                 "--no-build",
                 "--verbose",
@@ -1257,7 +1311,11 @@ local ef_dbcontext_parser = parser_flags(parser({
                 "--startup-project"..parser({csproj_files_matcher}),
                 "--framework"..parser({get_framework_list}), "-f"..parser({get_framework_list}),
                 "--configuration"..parser({"Debug", "Release"}),
-                "--runtime", -- "-r", -- TODO: https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
+
+                -- TODO: https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
+                "--runtime"..parser({"win-x64", "win-x86", "linux-x64", "linux-x86", "linux-arm", "osx-x64"}),
+                "-r"..parser({"win-x64", "win-x86", "linux-x64", "linux-x86", "linux-arm", "osx-x64"}),
+
                 "--msbuildprojectextensionspath"..parser({matchers.dirs, "obj"}),
                 "--no-build",
                 "--verbose",
@@ -1285,7 +1343,11 @@ local ef_migrations_parser = parser_flags(parser({
             "--startup-project"..parser({csproj_files_matcher}),
             "--framework"..parser({get_framework_list}),
             "--configuration"..parser({"Debug", "Release"}),
-            "--runtime", -- "-r", -- TODO: https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
+
+            -- TODO: https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
+            "--runtime"..parser({"win-x64", "win-x86", "linux-x64", "linux-x86", "linux-arm", "osx-x64"}),
+            "-r"..parser({"win-x64", "win-x86", "linux-x64", "linux-x86", "linux-arm", "osx-x64"}),
+
             "--msbuildprojectextensionspath"..parser({matchers.dirs, "obj"}),
             "--no-build",
             "--verbose",
@@ -1301,7 +1363,11 @@ local ef_migrations_parser = parser_flags(parser({
         "--startup-project"..parser({csproj_files_matcher}),
         "--framework"..parser({get_framework_list}),
         "--configuration"..parser({"Debug", "Release"}),
-        "--runtime", -- "-r", -- TODO: https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
+
+        -- TODO: https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
+        "--runtime"..parser({"win-x64", "win-x86", "linux-x64", "linux-x86", "linux-arm", "osx-x64"}),
+        "-r"..parser({"win-x64", "win-x86", "linux-x64", "linux-x86", "linux-arm", "osx-x64"}),
+
         "--msbuildprojectextensionspath"..parser({matchers.dirs, "obj"}),
         "--no-build",
         "--verbose",
@@ -1318,7 +1384,11 @@ local ef_migrations_parser = parser_flags(parser({
         "--startup-project"..parser({csproj_files_matcher}),
         "--framework"..parser({get_framework_list}),
         "--configuration"..parser({"Debug", "Release"}),
-        "--runtime", -- "-r", -- TODO: https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
+
+        -- TODO: https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
+        "--runtime"..parser({"win-x64", "win-x86", "linux-x64", "linux-x86", "linux-arm", "osx-x64"}),
+        "-r"..parser({"win-x64", "win-x86", "linux-x64", "linux-x86", "linux-arm", "osx-x64"}),
+
         "--msbuildprojectextensionspath"..parser({matchers.dirs, "obj"}),
         "--no-build",
         "--verbose",
@@ -1340,7 +1410,11 @@ local ef_migrations_parser = parser_flags(parser({
             "--startup-project"..parser({csproj_files_matcher}),
             "--framework"..parser({get_framework_list}),
             "--configuration"..parser({"Debug", "Release"}),
-            "--runtime", -- "-r", -- TODO: https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
+
+            -- TODO: https://docs.microsoft.com/en-us/dotnet/core/rid-catalog
+            "--runtime"..parser({"win-x64", "win-x86", "linux-x64", "linux-x86", "linux-arm", "osx-x64"}),
+            "-r"..parser({"win-x64", "win-x86", "linux-x64", "linux-x86", "linux-arm", "osx-x64"}),
+
             "--msbuildprojectextensionspath"..parser({matchers.dirs, "obj"}),
             "--no-build",
             "--verbose",
