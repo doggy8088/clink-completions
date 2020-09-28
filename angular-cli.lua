@@ -1,194 +1,382 @@
 local parser = clink.arg.new_parser
 
-local addon_parser = parser({
-    "--dry-run", "-d",
-    "--verbose", "-v",
-    "--blueprint", "-b",
-    "--skip-npm", "-sn",
-    "--skip-bower", "-sb",
-    "--skip-git", "-sg",
-    "--directory", "-dir"
-})
+local function flags(...)
+    local p = clink.arg.new_parser()
+    p:set_flags(...)
+    return p
+end
 
-local asset_sizes_parser = parser({
-    "--output-path", "-o"
-})
-
-local build_parser = parser({
-    "--environment=", "-e",
-    "--environment=dev", "-dev",
-    "--environment=prod", "-prod",
-    "--output-path", "-o",
-    "--watch", "-w",
-    "--watcher",
-    "--suppress-sizes",
-    "--target", "-t",
-    "--target=development", "-dev",
-    "--target=production", "-prod",
-    "--base-href", "-bh",
-    "--aot"
-})
-
-local destroy_parser = parser({
-    "--dry-run", "-d",
-    "--verbose", "-v",
-    "--pod", "-p",
-    "--classic", "-c",
-    "--dummy", "-dum", "-id",
-    "--in-repo-addon", "--in-repo", "-ir"
-})
-
-local generate_parser = parser({
-    "class", "cl",
-    "component", "c",
-    "directive", "d",
-    "enum", "e",
-    "module", "m",
-    "pipe", "p",
-    "route", "r",
-    "service", "s"
-},{
-    "--dry-run", "-d",
-    "--verbose", "-v",
-    "--pod", "-p",
-    "--classic", "-c",
-    "--dummy", "-dum", "-id",
-    "--in-repo-addon", "--in-repo", "-ir"
-})
-
-local help_parser = parser({
-    "--verbose", "-v",
-    "--json"
-})
-
-local init_parser = parser({
-    "--dry-run", "-d",
-    "--verbose", "-v",
-    "--blueprint", "-b",
-    "--skip-npm", "-sn",
-    "--skip-bower", "-sb",
-    "--name", "-n",
-    "--link-cli", "-lc",
-    "--source-dir", "-sd",
-    "--style", "--style=sass", "--style=scss", "--style=less", "--style=stylus",
-    "--prefix", "-p",
-    "--mobile",
-    "--routing",
-    "--inline-style", "-is",
-    "--inline-template", "-it"
-})
-
-local new_parser = parser({
-    "--dry-run", "-d",
-    "--verbose", "-v",
-    "--blueprint", "-b",
-    "--skip-npm", "-sn",
-    "--skip-git", "-sg",
-    "--directory", "-dir",
-    "--link-cli", "-lc",
-    "--source-dir", "-sd",
-    "--style",
-    "--prefix", "-p",
-    "--mobile",
-    "--routing",
-    "--inline-style", "-is",
-    "--inline-template", "-it"
-})
-
-local serve_parser = parser({
-    "--port", "-p",
-    "--host", "-H",
-    "--proxy", "-pr", "-pxy",
-    "--proxy-config", "-pc",
-    "--insecure-proxy", "--inspr",
-    "--watcher", "-w",
-    "--live-reload", "-lr",
-    "--live-reload-host", "-lrh",
-    "--live-reload-base-url", "-lrbu",
-    "--live-reload-port", "-lrp",
-    "--live-reload-live-css",
-    "--environment", "-e",
-    "--environment=development", "-dev",
-    "--environment=production", "-prod",
-    "--output-path", "-op", "-out",
-    "--ssl",
-    "--ssl-key",
-    "--ssl-cert",
-    "--target", "-t",
-    "--target=development", "-dev",
-    "--target=production", "-prod",
+-- https://github.com/angular/angular-cli/wiki/build
+local build_parser = flags({
     "--aot",
-    "--open", "-o"
+    "--base-href",
+    "--build-optimizer",
+    "--common-chunk",
+    "--configuration", -- "-c",
+    "--delete-output-path",
+    "--deploy-url",
+    "--eval-source-map",
+    "--extract-css",
+    "--extract-licenses",
+    "--fork-type-checker",
+    "--i18n-file",
+    "--i18n-format",
+    "--i18n-locale",
+    "--i18n-missing-translation",
+    "--index",
+    "--main",
+    "--named-chunks",
+    "--ngsw-config-path",
+    "--optimization",
+    "--output-hashing",
+    "--output-path",
+    "--poll",
+    "--polyfills",
+    "--preserve-symlinks",
+    "--prod",
+    "--progress",
+    "--no-progress",
+    "--service-worker",
+    "--show-circular-dependencies",
+    "--skip-app-shell",
+    "--source-map",
+    "--stats-json",
+    "--subresource-integrity",
+    "--ts-config",
+    "--vendor-chunk",
+    "--verbose",
+    "--watch", "-w"
 })
 
-local get_parser = parser({
-    "--global"
+-- https://github.com/angular/angular-cli/wiki/generate
+local generate_parser = parser({
+    -- "cl",
+    "class" .. flags(
+        "--force",
+        "--project",
+        "--spec",
+        "--type",
+        "--dry-run"
+    ),
+
+    -- "c",
+    "component" .. flags(
+        "--change-detection",
+        "--export",
+        "--flat",
+        "--inline-style",
+        "--inline-template",
+        "--module",
+        "--prefix",
+        "--project",
+        "--selector",
+        "--skip-import",
+        "--spec",
+        "--styleext",
+        "--view-encapsulation" .. parser({ "None", "Emulated", "Native" }),
+        "--force",
+        "--dry-run"
+    ),
+
+    -- "d",
+    "directive" .. flags(
+        "--export",
+        "--flat",
+        "--module",
+        "--prefix",
+        "--project",
+        "--selector",
+        "--skip-import",
+        "--spec",
+        "--force",
+        "--dry-run"
+    ),
+    -- "e",
+    "enum" .. flags(
+        "--project",
+        "--force",
+        "--dry-run"
+    ),
+    -- "g",
+    "guard" .. flags(
+        "--flat",
+        "--project",
+        "--spec",
+        "--force",
+        "--dry-run"
+    ),
+    -- "i",
+    "interface" .. flags(
+        "--prefix",
+        "--project",
+        "--force",
+        "--dry-run"
+    ),
+    -- "m",
+    "module" .. flags(
+        "--flat",
+        "--module",
+        "--project",
+        "--routing",
+        "--routing-scope",
+        "--spec",
+        "--force",
+        "--dry-run"
+    ),
+    -- "p",
+    "pipe" .. flags(
+        "--export",
+        "--flat",
+        "--module",
+        "--project",
+        "--skip-import",
+        "--spec",
+        "--force",
+        "--dry-run"
+    ),
+    -- "s",
+    "service" .. flags(
+        "--flat",
+        "--project",
+        "--spec",
+        "--force",
+        "--dry-run"
+    ),
+    "application" .. flags(
+        "--inline-style",
+        "--inline-template",
+        "--prefix",
+        "--routing",
+        "--skip-package-json",
+        "--skip-tests",
+        "--style",
+        "--view-encapsulation" .. parser({ "None", "Emulated", "Native" }),
+        "--force",
+        "--dry-run"
+    ),
+    "library" .. flags(
+        "--entry-file",
+        "--prefix",
+        "--skip-package-json",
+        "--skip-ts-config",
+        "--force",
+        "--dry-run"
+    ),
+    "universal" .. flags(
+        "--app-dir",
+        "--app-id",
+        "--client-project",
+        "--main",
+        "--root-module-class-name",
+        "--root-module-file-name",
+        "--skip-install",
+        "--test",
+        "--test-tsconfig-file-name",
+        "--tsconfig-file-name",
+        "--force",
+        "--dry-run"
+    ),
+    "appShell" .. flags(
+        "--app-dir",
+        "--app-id",
+        "--client-project",
+        "--index",
+        "--main",
+        "--name",
+        "--out-dir",
+        "--root",
+        "--root-module-class-name",
+        "--root-module-file-name",
+        "--route",
+        "--source-dir", "-D",
+        "--test",
+        "--test-tsconfig-file-name",
+        "--tsconfig-file-name",
+        "--universal-project",
+        "--force",
+        "--dry-run"
+    )
 })
 
-local set_parser = parser({
-    "--global", "-g"
-})
+-- https://github.com/angular/angular-cli/wiki/new
+local new_parser = flags({
+    "--collection", -- "-c",
+    "--directory",
+    "--dry-run", -- "--dryRun", "-d",
+    "--force", -- "-f",
+    "--inline-style", -- "-s",
+    "--inline-template", -- "-t",
+    "--new-project-root",
+    "--prefix", -- "-p",
+    "--routing",
+    "--create-application=false",
+    "--skip-git", -- "-g",
+    "--skip-install",
+    "--skip-tests", -- "-S",
+    "--style", "--style=sass", "--style=scss", "--style=less",
+    "--verbose", "-v",
+    "--view-encapsulation" .. parser({ "None", "Emulated", "Native" })
+}):loop(1)
 
-local github_pages_parser = parser({
-    "--message",
-    "--environment",
-    "--branch",
-    "--skip-build",
-    "--gh-token",
-    "--gh-username",
-    "--user-page"
-})
-
-local test_parser = parser({
-    "--environment", "-e",
-    "--config-file", "-c", "-cf",
-    "--server", "-s",
-    "--host", "-H",
-    "--test-port", "-tp",
-    "--filter", "-f",
-    "--module", "-m",
-    "--watch", "--watcher", "-w",
-    "--launch",
-    "--reporter", "-r",
-    "--silent",
-    "--test-page",
-    "--page",
-    "--query",
-    "--code-coverage", "-cc",
-    "--lint", "-l",
-    "--browsers",
-    "--colors",
-    "--log-levevl",
+-- https://github.com/angular/angular-cli/wiki/serve
+local serve_parser = flags({
+    "--aot",
+    "--base-href",
+    "--browser-target",
+    "--common-chunk",
+    "--configuration", -- "-c",
+    "--deploy-url",
+    "--disable-host-check",
+    "--eval-source-map",
+    "--hmr",
+    "--hmr-warning",
+    "--host",
+    "--live-reload",
+    "--open", "-o",
+    "--optimization",
+    "--poll",
     "--port",
-    "--reporters",
-    "--build"
+    "--prod",
+    "--progress",
+    "--no-progress",
+    "--proxy-config",
+    "--public-host",
+    "--serve-path",
+    "--serve-path-default-warning",
+    "--source-map",
+    "--ssl",
+    "--ssl-cert",
+    "--ssl-key",
+    "--vendor-chunk",
+    "--watch"
 })
 
-local version_parser = parser({
-    "--verbose"
+-- https://github.com/angular/angular-cli/wiki/update
+local update_parser = flags({
+    "--all",
+    "--dry-run",
+    "--force",
+    "--from",
+    "--migrate-only",
+    "--next",
+    "--registry",
+    "--to"
+})
+
+-- https://github.com/angular/angular-cli/wiki/test
+local test_parser = flags({
+    "--browsers",
+    "--code-coverage",
+    "--configuration", -- "-c",
+    "--environment",
+    "--karma-config",
+    "--main",
+    "--poll",
+    "--polyfills",
+    "--preserve-symlinks",
+    "--prod",
+    "--progress",
+    "--no-progress",
+    "--source-map",
+    "--ts-config",
+    "--watch"
+})
+
+-- https://github.com/angular/angular-cli/wiki/e2e
+local e2e_parser = flags({
+    "--base-url",
+    "--configuration", -- "-c",
+    "--dev-server-target",
+    "--element-explorer",
+    "--host",
+    "--port",
+    "--prod",
+    "--protractor-config",
+    "--suite",
+    "--webdriver-update"
+})
+
+-- https://github.com/angular/angular-cli/wiki/lint
+local lint_parser = flags({
+    "--configuration", -- "-c",
+    "--tslint-config",
+    "--fix",
+    "--type-check",
+    "--force",
+    "--silent",
+    "--format"
+})
+-- https://github.com/angular/angular-cli/wiki/serve
+local serve_parser = flags({
+    "--aot",
+    "--base-href",
+    "--browser-target",
+    "--common-chunk",
+    "--configuration", -- "-c",
+    "--deploy-url",
+    "--disable-host-check",
+    "--eval-source-map",
+    "--hmr",
+    "--hmr-warning",
+    "--host",
+    "--live-reload",
+    "--open", "-o",
+    "--optimization",
+    "--poll",
+    "--port",
+    "--prod",
+    "--progress",
+    "--no-progress",
+    "--proxy-config",
+    "--public-host",
+    "--serve-path",
+    "--serve-path-default-warning",
+    "--source-map",
+    "--ssl",
+    "--ssl-cert",
+    "--ssl-key",
+    "--vendor-chunk",
+    "--watch"
+})
+
+-- https://github.com/angular/angular-cli/wiki/xi18n
+local xi18n_parser = flags({
+    "--browser-target",
+    "--configuration", -- "-c",
+    "--i18n-format",
+    "--i18n-locale",
+    "--out-file",
+    "--output-path"
+})
+
+-- https://github.com/angular/angular-cli/wiki/run
+local run_parser = flags({
+    "--configuration" --, "-c"
+})
+
+-- https://github.com/angular/angular-cli/wiki/config
+local config_parser = parser({
+    "--global" --, "-g"
 })
 
 local ng_parser = parser({
-    "addon"..addon_parser,
-    "asset-sizes"..asset_sizes_parser,
-    "build"..build_parser, "b"..build_parser,
-    "destroy"..destroy_parser, "d"..destroy_parser,
-    "generate"..generate_parser, "g"..generate_parser,
-    "help"..help_parser, "h"..help_parser, "--help"..help_parser, "-h"..help_parser,
-    "init"..init_parser,
-    "install", "i",
+    "add", -- TODO: auto-detect installed collections
     "new"..new_parser,
-    "serve"..serve_parser, "server"..serve_parser, "s"..serve_parser,
-    "test"..test_parser, "t"..test_parser,
-    "e2e",
-    "lint",
-    "version"..version_parser, "v"..version_parser, "--version"..version_parser, "-v"..version_parser,
-    "completion",
+    "generate"..generate_parser, --"g"..generate_parser,
+    "update"..update_parser,
+    "build"..build_parser, --"b"..build_parser,
+    "serve"..serve_parser, --"server"..serve_parser, "s"..serve_parser,
+    "test"..test_parser, --"t"..test_parser,
+    "e2e"..e2e_parser,
+    "lint"..lint_parser,
+    "xi18n"..xi18n_parser,
+    "run"..run_parser,
+    "eject",
+    "config"..config_parser,
+    "help",
+    "version",
     "doc",
-    "make-this-awesome",
-    "set"..set_parser,
-    "get"..get_parser,
-    "github-pages:deploy"..github_pages_parser
+    "make-this-awesome"
 })
 
 clink.arg.register_parser("ng", ng_parser)

@@ -18,7 +18,7 @@ XCOPY /E /Y modules           %TargetFolder%\modules\
 XCOPY /E /Y spec              %TargetFolder%\spec\
 XCOPY /E /Y dotnetcli30.lua   %TargetFolder%\
 XCOPY /E /Y npm.lua           %TargetFolder%\
-XCOPY /E /Y angular-cli-6.lua %TargetFolder%\
+XCOPY /E /Y angular-cli.lua   %TargetFolder%\
 XCOPY /E /Y chocolatey.lua    %TargetFolder%\
 XCOPY /E /Y git.lua           %TargetFolder%\
 XCOPY /E /Y git_prompt.lua    %TargetFolder%\
