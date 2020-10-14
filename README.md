@@ -1,4 +1,4 @@
-
+****
 [![Build status](https://ci.appveyor.com/api/projects/status/h401gvqery4wwa6p/branch/master?svg=true)](https://ci.appveyor.com/project/vladimir-kotikov/clink-completions/branch/master)
 [![codecov](https://codecov.io/gh/vladimir-kotikov/clink-completions/branch/master/graph/badge.svg)](https://codecov.io/gh/vladimir-kotikov/clink-completions)
 
@@ -10,22 +10,30 @@ Completion files to [clink](https://github.com/mridgers/clink) util
 使用筆記
 ========
 
-1. 全新電腦的快速安裝方式
+1. 先安裝 [Clink](https://mridgers.github.io/clink/) 軟體
 
     ```sh
     choco install clink -y
-    mkdir c:\Projects
-    cd /d c:\Projects
+    ```
+
+2. 取得本專案原始碼
+
+    ```sh
     git clone https://github.com/doggy8088/clink-completions.git
     cd clink-completions
+    ```
+
+3. 以系統管理員身分執行 `install.bat`
+
+    ```sh
     install.bat
     ```
 
-2. 如果你手動修改 `%ProgramFiles(x86)%\clink\0.4.9` 目錄下的 `*.lua` 檔案
+4. 如果你手動修改 `%ProgramFiles(x86)%\clink\0.4.9` 目錄下的 `*.lua` 檔案
 
     你可以按下 `Ctrl-Q` 重新載入所有的 Lua 命令檔！
 
-3. 常用快速鍵
+5. 常用快速鍵
 
    - `Ctrl-PgUp` - 可以自動執行 `cd ..` 回上一層
    - `Ctrl-Z` - 輸入命令文字支援 Undo 功能
@@ -33,6 +41,11 @@ Completion files to [clink](https://github.com/mridgers/clink) util
    - `Ctrl-W` - 刪除一個字
    - `Alt-H` - 顯示所有快速鍵組合
    - `Ctrl-Q` - 重新載入 clink 的 Lua scripts
+
+相關連結
+=========
+
+- [如何為 .NET Core CLI 啟用 TAB 鍵自動完成](https://docs.microsoft.com/zh-tw/dotnet/core/tools/enable-tab-autocomplete?WT.mc_id=DT-MVP-4015686)
 
 Notes
 =====
